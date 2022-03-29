@@ -107,7 +107,7 @@ class _CheckerBoardState extends State<CheckerBoard> {
     String month = now.month.toString();
     if (month.length == 1) month = "0" + month;
     date = now.year.toString() + "-" + month + "-" + now.day.toString();
-    date = "2022-03-23";
+    date = "2022-05-27";
     String str = await loadAsset(date);
     int xCount = 0;
     int yCount = 0;
@@ -144,9 +144,8 @@ class _CheckerBoardState extends State<CheckerBoard> {
         }
       }
 
-      setState(() {
-        list = temp;
-      });
+      list = temp;
+
 
       shrink();
       return temp;
@@ -466,16 +465,16 @@ class _CheckerBoardState extends State<CheckerBoard> {
       if (indexesToCheck.contains(element) || targets[element].isLocked)
         indexesToShake.remove(element);
     }
-    print('indexes to check - >' + indexesToCheck.toString());
-    print('index to shake - > ' + indexesToShake.toString());
+    // print('indexes to check - >' + indexesToCheck.toString());
+    // print('index to shake - > ' + indexesToShake.toString());
     return indexesToShake.isEmpty;
   }
 
   void shakeIndexes() {
-    // for(int i = 0; i < indexesToShake.length; i++){
-    //   int element = indexesToShake.elementAt(i);
-    //   targetControllers[element].shake();
-    // }
+    for(int i = 0; i < indexesToShake.length; i++){
+      int element = indexesToShake.elementAt(i);
+      targetControllers[element].shake();
+    }
   }
 
   void checkLetters() {
@@ -579,11 +578,28 @@ class _CheckerBoardState extends State<CheckerBoard> {
           Spacer(),
 
 
-          FutureBuilder<List<List<String>>>(
-            future: loadedList,
+          FutureBuilder<List<Target>>(
+            future: loadedTargets,
             builder:
-                (BuildContext context, AsyncSnapshot<List<List<String>>> snapshot) {
-              return  Expanded(
+                (BuildContext context, AsyncSnapshot<List<Target>> snapshot) {
+              if(snapshot.connectionState == ConnectionState.waiting){
+                return  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          primary: Colour.lightGreen,
+                          fixedSize: const Size(300, 75),
+                          textStyle: GoogleFonts.grandstander(
+                              fontSize: 42,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.white,
+                              decoration: TextDecoration.none),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20))),
+                      onPressed:null,
+                      child: Text('$numGuesses/5'),
+                    ));
+              } else {
+                return  Expanded(
                   child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     primary: Colour.lightGreen,
@@ -598,6 +614,7 @@ class _CheckerBoardState extends State<CheckerBoard> {
                 onPressed:(!disable())?pressedGuess :null,
                 child: Text('$numGuesses/5'),
               ));
+              }
 
             },
           ),

@@ -1,3 +1,5 @@
+import 'package:animated_widgets/widgets/rotation_animated.dart';
+import 'package:animated_widgets/widgets/shake_animated_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'colour.dart';
@@ -10,6 +12,7 @@ class Target extends StatefulWidget {
   int hash = -1;
   Color col = Colors.transparent;
   bool isRed = false;
+  bool shouldShake = false;
   String l = "";
   bool isLocked = false;
   List<String> triedLetters = [];
@@ -59,8 +62,13 @@ class _Target extends State<Target> {
       getColor();
     });
   }
-  void shake(){
-   //perfrom shake
+
+  void shake() {
+    if (!widget.isLocked) {
+      setState(() {
+        widget.shouldShake = true;
+      });
+    }
   }
 
   void setR() {
@@ -75,6 +83,18 @@ class _Target extends State<Target> {
     }
   }
 
+  double shake2(double animation) =>
+      2 * (0.5 - (0.5 - Curves.bounceOut.transform(animation)).abs());
+
+  Offset getOffSet(double animation) {
+    if (widget.shouldShake) {
+      widget.shouldShake = false;
+      return Offset(20 * shake2(animation), 0);
+    }
+    return Offset(0, 0);
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return DragTarget<Let>(
@@ -87,23 +107,30 @@ class _Target extends State<Target> {
             onTap: () {
               if (!widget.isLocked) {
                 setState(() {
+                  widget.shouldShake = false;
                   widget.l = "";
                   widget.hash = -1;
                   widget.onVisibilitySelect();
                 });
               }
             },
-            child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 600),
+            child: ShakeAnimatedWidget(
+                enabled: widget.shouldShake,
+                duration: const Duration(milliseconds: 1500),
+                shakeAngle: Rotation.deg(z:10 ),
+                curve: Curves.linear,
                 child: Container(
                   decoration: BoxDecoration(
                     color: (widget.isRed) ? Colors.red : getColor(),
                   ),
-
                   height: 100.0,
                   width: 100.0,
                   child: Center(
-                    child: Text(widget.l, style: GoogleFonts.grandstander(fontSize: 42,fontWeight: FontWeight.w900, color: Colors.white)),
+                    child: Text(widget.l,
+                        style: GoogleFonts.grandstander(
+                            fontSize: 42,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.white)),
                   ),
                 )));
       },
@@ -118,6 +145,8 @@ class _Target extends State<Target> {
       onWillAccept: (data) {
         return widget.c != "-" && !widget.isLocked;
       },
+
     );
+
   }
 }
