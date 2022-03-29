@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'colour.dart';
 import 'main.dart';
 
 class Target extends StatefulWidget {
@@ -6,8 +8,11 @@ class Target extends StatefulWidget {
   int y;
   String c;
   int hash = -1;
+  Color col = Colors.transparent;
+  bool isRed = false;
   String l = "";
   bool isLocked = false;
+  List<String> triedLetters = [];
   TargetController controller;
   final VisibilityCallback onVisibilitySelect;
 
@@ -28,15 +33,19 @@ class _Target extends State<Target> {
   _Target(TargetController controller) {
     controller.clearLetter = clearLetter;
     controller.setColor = setColor;
+    controller.setR = setR;
+    controller.shake = shake;
   }
 
   Color getColor() {
     if (widget.isLocked) {
-      return Colors.amberAccent;
+      widget.col = Colour.lightGreen;
     } else if (widget.c != "-") {
-      return Colors.black12;
+      widget.col = Colour.gray;
+    } else {
+      widget.col = Colors.transparent;
     }
-    return Colors.white;
+    return widget.col;
   }
 
   void clearLetter() {
@@ -49,6 +58,21 @@ class _Target extends State<Target> {
     setState(() {
       getColor();
     });
+  }
+  void shake(){
+   //perfrom shake
+  }
+
+  void setR() {
+    if (widget.isRed) {
+      setState(() {
+        widget.isRed = false;
+      });
+    } else if (!widget.isLocked) {
+      setState(() {
+        widget.isRed = true;
+      });
+    }
   }
 
   @override
@@ -69,17 +93,23 @@ class _Target extends State<Target> {
                 });
               }
             },
-            child: Container(
-              height: 100.0,
-              width: 100.0,
-              color: getColor(),
-              child: Center(
-                child: Text(widget.l, style: const TextStyle(fontSize: 36)),
-              ),
-            ));
+            child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 600),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: (widget.isRed) ? Colors.red : getColor(),
+                  ),
+
+                  height: 100.0,
+                  width: 100.0,
+                  child: Center(
+                    child: Text(widget.l, style: GoogleFonts.grandstander(fontSize: 42,fontWeight: FontWeight.w900, color: Colors.white)),
+                  ),
+                )));
       },
       onAccept: (data) {
         setState(() {
+          //widget.isRed = false;
           widget.l = data.letter;
           widget.hash = data.id;
           widget.onVisibilitySelect();

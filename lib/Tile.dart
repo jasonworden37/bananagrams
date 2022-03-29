@@ -1,4 +1,6 @@
+import 'package:bananagrams/colour.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'main.dart';
 
@@ -7,12 +9,14 @@ class Tile extends StatefulWidget {
   bool vis;
   int hash;
   final TileController controller;
+  final setRedCallback setRed;
 
   Tile(
       {Key? key,
       required this.letter,
       required this.vis,
       required this.controller,
+        required this.setRed,
       required this.hash})
       : super(key: key);
 
@@ -41,35 +45,40 @@ class _Tile extends State<Tile> {
           maintainAnimation: true,
           maintainState: true,
           child: Container(
-              height: 50,
-              width: 50,
+              height: 25,
+              width: 25,
               decoration: const BoxDecoration(
-                color: Colors.amberAccent,
+                color: Colour.lightGreen,
                 borderRadius: BorderRadius.all(Radius.circular(15.0)),
               ),
               child: Center(
                   child: Text(widget.letter,
-                      style: const TextStyle(fontSize: 36))))),
+                      style: GoogleFonts.grandstander(fontSize: 42,fontWeight: FontWeight.w900, color: Colors.white))))),
       feedback: Container(
           height: 50,
           width: 50,
           decoration: const BoxDecoration(
-            color: Colors.amberAccent,
+            color: Colour.lightGreen,
             borderRadius: BorderRadius.all(Radius.circular(15.0)),
           ),
           child: Center(
               child: Text(widget.letter,
-                  style: const TextStyle(
-                    decoration: TextDecoration.none,
-                    fontSize: 36,
-                    color: Colors.black,
-                  )))),
+                  style: GoogleFonts.grandstander(fontSize: 42,fontWeight: FontWeight.w900, color: Colors.white, decoration: TextDecoration.none)))),
       childWhenDragging: Container(),
       onDragCompleted: () {
         setState(() {
           widget.vis = false;
         });
       },
+      onDragStarted: (){
+        widget.setRed(widget.letter);
+      },
+      onDragEnd: (data){
+        widget.setRed(widget.letter);
+      },
+
+
+
     );
   }
 }
