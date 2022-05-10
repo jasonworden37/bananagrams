@@ -105,9 +105,11 @@ class _CheckerBoardState extends State<CheckerBoard> {
 
   Future<List<List<String>>> loadList() async {
     String month = now.month.toString();
+    String day = now.day.toString();
     if (month.length == 1) month = "0" + month;
-    date = now.year.toString() + "-" + month + "-" + now.day.toString();
-    date = "2022-05-27";
+    if(day.length == 1) day = "0" + day;
+    date = now.year.toString() + "-" + month + "-" + day;
+    //date = "2022-05-27";
     String str = await loadAsset(date);
     int xCount = 0;
     int yCount = 0;
@@ -393,6 +395,8 @@ class _CheckerBoardState extends State<CheckerBoard> {
       }
     }
   }
+
+
 
   bool gatherIndexes() {
     indexesToShake.clear();
